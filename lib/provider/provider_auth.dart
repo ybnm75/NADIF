@@ -78,9 +78,9 @@ class AuthProvider extends ChangeNotifier {
 //VerifyOtp
   void verifyOtp(
       {required BuildContext context,
-      required String userOtp,
-      required String verificationId,
-      required Function onSuccess}) async {
+        required String userOtp,
+        required String verificationId,
+        required Function onSuccess}) async {
     _isLoading = true;
     notifyListeners();
     try {
@@ -102,11 +102,15 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> checkExistingUser() async {
-    DocumentSnapshot snapshot =
-        await _firebaseFirestore.collection("fournisseur").doc(_userId).get();
-        await _firebaseFirestore.collection("achteur").doc(_userId).get();
+    DocumentSnapshot fournisseurSnapshot =
+    await _firebaseFirestore.collection("fournisseur").doc(_userId).get();
 
-    if (snapshot.exists) {
+    DocumentSnapshot achteurSnapshot =
+    await _firebaseFirestore.collection("achteur").doc(_userId).get();
+    DocumentSnapshot chauffeurSnapshot =
+    await _firebaseFirestore.collection("chauffeur").doc(_userId).get();
+
+    if (fournisseurSnapshot.exists || achteurSnapshot.exists || chauffeurSnapshot.exists) {
       print('User exists');
       return true;
     } else {
@@ -117,9 +121,9 @@ class AuthProvider extends ChangeNotifier {
 
   void saveUserDataToFirebase(
       {required BuildContext context,
-      required UserModal userModal,
-      required Function onSuccess,
-      required File profilePic}) async {
+        required UserModal userModal,
+        required Function onSuccess,
+        required File profilePic}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -151,6 +155,16 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       });
+      await _firebaseFirestore
+          .collection("chauffeur")
+          .doc(_userId)
+          .set(userModal.toMap())
+          .then((value) {
+        onSuccess();
+        _isLoading = false;
+        notifyListeners();
+      });
+
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString());
       _isLoading = false;
@@ -165,15 +179,57 @@ class AuthProvider extends ChangeNotifier {
     return downloadURL;
   }
 
-  Future getDataFromFirestore () async {
-    await _firebaseFirestore.collection('fournisseur').doc(_firebaseAuth.currentUser!.uid).get().then((DocumentSnapshot snapshot){
-      _userModal = UserModal(name: snapshot['name'], email: snapshot['email'], phoneNumber: snapshot['phoneNumber'], userId: userId, profilePic: snapshot['profilePic']);
-      _userId = userModal.userId;
-    });
-    await _firebaseFirestore.collection('achteur').doc(_firebaseAuth.currentUser!.uid).get().then((DocumentSnapshot snapshot){
-      _userModal = UserModal(name: snapshot['name'], email: snapshot['email'], phoneNumber: snapshot['phoneNumber'], userId: userId, profilePic: snapshot['profilePic']);
-      _userId = userModal.userId;
-    });
+  Future<void> getDataFromFirestore() async {
+    try {
+      final docFournisseur = await _firebaseFirestore
+          .collection('fournisseur')
+          .doc(_firebaseAuth.currentUser!.uid)
+          .get();
+      final docAchteur = await _firebaseFirestore
+          .collection('achteur')
+          .doc(_firebaseAuth.currentUser!.uid)
+          .get();
+      final docChauffeur = await _firebaseFirestore
+          .collection('chauffeur')
+          .doc(_firebaseAuth.currentUser!.uid)
+          .get();
+
+      if (docFournisseur.exists) {
+        _userModal = UserModal(
+          permis: '',
+          name: docFournisseur['name'],
+          email: docFournisseur['email'],
+          phoneNumber: docFournisseur['phoneNumber'],
+          userId: _firebaseAuth.currentUser!.uid,
+          profilePic: docFournisseur['profilePic'],
+        );
+      } else if (docAchteur.exists) {
+        _userModal = UserModal(
+          name: docAchteur['name'],
+          email: docAchteur['email'],
+          permis: "",
+          phoneNumber: docAchteur['phoneNumber'],
+          userId: _firebaseAuth.currentUser!.uid,
+          profilePic: docAchteur['profilePic'],
+        );
+
+      } else if (docChauffeur.exists) {
+        _userModal = UserModal(
+          name: docChauffeur['name'],
+          email: docChauffeur['email'],
+          phoneNumber: docChauffeur['phoneNumber'],
+          permis: docChauffeur['Permis'],
+          userId: _firebaseAuth.currentUser!.uid,
+          profilePic: docChauffeur['profilePic'],
+        );
+      } else {
+        // user doesn't exist in either collection
+        _userModal = null;
+      }
+    } catch (e) {
+      // handle error
+      print(e.toString());
+    }
   }
   // Now to store data locally we need the sharedPrefences Package
   Future saveUserDataToSP () async{

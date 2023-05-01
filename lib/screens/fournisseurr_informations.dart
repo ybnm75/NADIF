@@ -165,6 +165,7 @@ class _FournisseurInformationsState extends State<FournisseurInformations> {
     UserModal userModal = UserModal(
         name: nameController.text.trim(),
         email: emailController.text.trim(),
+        permis: "",
         phoneNumber: "",
         userId: "",
         profilePic: "");

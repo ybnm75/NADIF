@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nadif/provider/provider_auth.dart';
+import 'package:nadif/screens/cart_geolocalisaton.dart';
 import 'package:nadif/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.greenAccent,
-        title: const Text('Fournisseur Info'),
+        title: const Text('User Info'),
         actions: [
           IconButton(
             onPressed: () {
@@ -44,7 +45,10 @@ class HomeScreen extends StatelessWidget {
             ),
             Text(ap.userModal.name),
             Text(ap.userModal.email),
+            Text(ap.userModal.permis),
             Text(ap.userModal.phoneNumber),
+
+            ElevatedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>MyCard(),));}, child: const Text("Balayer vers la Map"))
           ],
         ),
       ),
