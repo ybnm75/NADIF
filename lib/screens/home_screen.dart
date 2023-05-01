@@ -45,6 +45,7 @@ class HomeScreen extends StatelessWidget {
             ),
             Text(ap.userModal.name),
             Text(ap.userModal.email),
+            Text(ap.userModal.permis),
             Text(ap.userModal.phoneNumber),
 
             ElevatedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>MyCard(),));}, child: const Text("Balayer vers la Map"))

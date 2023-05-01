@@ -107,8 +107,10 @@ class AuthProvider extends ChangeNotifier {
 
     DocumentSnapshot achteurSnapshot =
     await _firebaseFirestore.collection("achteur").doc(_userId).get();
+    DocumentSnapshot chauffeurSnapshot =
+    await _firebaseFirestore.collection("chauffeur").doc(_userId).get();
 
-    if (fournisseurSnapshot.exists || achteurSnapshot.exists) {
+    if (fournisseurSnapshot.exists || achteurSnapshot.exists || chauffeurSnapshot.exists) {
       print('User exists');
       return true;
     } else {
@@ -153,6 +155,15 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       });
+      await _firebaseFirestore
+          .collection("chauffeur")
+          .doc(_userId)
+          .set(userModal.toMap())
+          .then((value) {
+        onSuccess();
+        _isLoading = false;
+        notifyListeners();
+      });
 
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString());
@@ -178,9 +189,14 @@ class AuthProvider extends ChangeNotifier {
           .collection('achteur')
           .doc(_firebaseAuth.currentUser!.uid)
           .get();
+      final docChauffeur = await _firebaseFirestore
+          .collection('chauffeur')
+          .doc(_firebaseAuth.currentUser!.uid)
+          .get();
 
       if (docFournisseur.exists) {
         _userModal = UserModal(
+          permis: '',
           name: docFournisseur['name'],
           email: docFournisseur['email'],
           phoneNumber: docFournisseur['phoneNumber'],
@@ -191,9 +207,20 @@ class AuthProvider extends ChangeNotifier {
         _userModal = UserModal(
           name: docAchteur['name'],
           email: docAchteur['email'],
+          permis: "",
           phoneNumber: docAchteur['phoneNumber'],
           userId: _firebaseAuth.currentUser!.uid,
           profilePic: docAchteur['profilePic'],
+        );
+
+      } else if (docChauffeur.exists) {
+        _userModal = UserModal(
+          name: docChauffeur['name'],
+          email: docChauffeur['email'],
+          phoneNumber: docChauffeur['phoneNumber'],
+          permis: docChauffeur['Permis'],
+          userId: _firebaseAuth.currentUser!.uid,
+          profilePic: docChauffeur['profilePic'],
         );
       } else {
         // user doesn't exist in either collection

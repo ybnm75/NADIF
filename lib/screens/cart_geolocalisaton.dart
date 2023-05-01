@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:nadif/screens/google_maps_screen.dart';
 import 'package:positioned_tap_detector_2/positioned_tap_detector_2.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
@@ -103,7 +104,18 @@ class _MyCardState extends State<MyCard> {
                           const SizedBox(height: 10.0,),
                           ElevatedButton(onPressed: (){
                             controller.getCurrentLocation();
-                          }, child: const Text('Get Current Location'),),
+                          }, child: const Text('Get Current Location'),
+                          ),
+                          const SizedBox(height: 10.0,),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                "${location.isNotEmpty ? location.first.country ?? "" : ""},${location.isNotEmpty ? location.first.locality ?? "" : ""},${location.isNotEmpty ? location.first.thoroughfare ?? location.first.name ?? "" : ""}",
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
 
                         ],
                       ),
@@ -117,6 +129,7 @@ class _MyCardState extends State<MyCard> {
                             ),
                             backgroundColor: Colors.blueGrey),
                         onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> MapScreen()));
                         },
                         child: const Text('Trouver un Fournisseur:'), ),
                   ],

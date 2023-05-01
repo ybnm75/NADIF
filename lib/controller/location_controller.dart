@@ -17,7 +17,7 @@ class LocationController extends GetxController {
         return Future.error("Permission Location are denied");
       }
     }
-    return await Geolocator.getCurrentPosition();
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
 
   }
 
@@ -36,7 +36,7 @@ class LocationController extends GetxController {
     }
   }
 
-  // Card(
+  //  Card(
   //   child: Padding(
   //     padding: const EdgeInsets.all(16.0),
   //     child: Text(

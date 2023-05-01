@@ -7,18 +7,19 @@ import 'package:nadif/utils/utils.dart';
 import 'package:nadif/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 
-class AchteurInformations extends StatefulWidget {
-  const AchteurInformations({Key? key}) : super(key: key);
+class ChaffeurInformations extends StatefulWidget {
+  const ChaffeurInformations({Key? key}) : super(key: key);
 
   @override
-  State<AchteurInformations> createState() =>
-      _AchteurInformationsState();
+  State<ChaffeurInformations> createState() =>
+      _ChaffeurInformationsState();
 }
 
-class _AchteurInformationsState extends State<AchteurInformations> {
+class _ChaffeurInformationsState extends State<ChaffeurInformations> {
   File? image;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final permisController = TextEditingController();
 
   @override
   void dispose() {
@@ -26,6 +27,7 @@ class _AchteurInformationsState extends State<AchteurInformations> {
     super.dispose();
     nameController.dispose();
     emailController.dispose();
+    permisController.dispose();
   }
 
   // select user image
@@ -41,7 +43,7 @@ class _AchteurInformationsState extends State<AchteurInformations> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hello Achteur'),
+        title: const Text('Hello Chauffeur'),
       ),
       body: SafeArea(
         child: isLoading == true
@@ -94,6 +96,12 @@ class _AchteurInformationsState extends State<AchteurInformations> {
                           icon: Icons.email_rounded,
                           inputType: TextInputType.emailAddress,
                           controller: emailController),
+                      textField(
+                          hintText: 'A',
+                          icon: Icons.account_circle,
+                          inputType: TextInputType.name,
+                          controller: permisController),
+                      //email
                       const SizedBox(
                         height: 20.0,
                       ),
@@ -165,7 +173,7 @@ class _AchteurInformationsState extends State<AchteurInformations> {
     UserModal userModal = UserModal(
         name: nameController.text.trim(),
         email: emailController.text.trim(),
-        permis: "",
+        permis: permisController.text.trim(),
         phoneNumber: "",
         userId: "",
         profilePic: "");

@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^4.5.1
   firebase_storage: ^11.1.0
   shared_preferences: ^2.1.0
+  google_maps_flutter: ^2.2.5
   provider: ^6.0.5
   pinput: ^2.2.13
   image_picker: ^0.8.7+3
