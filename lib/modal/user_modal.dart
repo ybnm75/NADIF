@@ -1,12 +1,12 @@
 class UserModal {
-   String name;
+   String? name;
    String email;
    String phoneNumber;
    String userId;
    String profilePic;
-   String permis;
+   String? permis;
 
-  UserModal({required this.name, required this.email, required this.phoneNumber, required this.userId, required this.profilePic,required this.permis});
+  UserModal({this.name, required this.email, required this.phoneNumber, required this.userId, required this.profilePic, this.permis});
 
   //from map
   factory UserModal.fromMap(Map<String, dynamic> map) {

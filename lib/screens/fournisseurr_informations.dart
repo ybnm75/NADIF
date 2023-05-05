@@ -174,6 +174,7 @@ class _FournisseurInformationsState extends State<FournisseurInformations> {
           context: context,
           userModal: userModal,
           profilePic: image!,
+          userType: "fournisseur",
           onSuccess: () {
             ap.saveUserDataToSP().then(
                   (value) => ap.setSignIn().then(

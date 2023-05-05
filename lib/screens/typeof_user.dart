@@ -22,6 +22,7 @@ class _TypeOfUserState extends State<TypeOfUser> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hello User'),
+        centerTitle: true,
       ),
       body: Center(
         child: Column(

@@ -54,6 +54,12 @@ dependencies:
   geolocator: ^9.0.2
   geocoding: ^2.1.0
   get: ^4.6.5
+  qr_flutter: ^4.0.0
+  barcode_scan2: ^4.2.4
+  qr_code_scanner: ^1.0.1
+  country_picker: ^2.0.15
+  awesome_dialog: ^3.0.2
+
 
 dev_dependencies:
   flutter_test:

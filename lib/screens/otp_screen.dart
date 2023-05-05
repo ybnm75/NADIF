@@ -149,7 +149,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 MaterialPageRoute(
                   builder: (context) => const TypeOfUser(),
                 ),
-                  (route) => false,
+                  (route) => true,
               );
             }
           });

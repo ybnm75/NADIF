@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:nadif/modal/annonce_model.dart';
 import 'package:nadif/modal/user_modal.dart';
 import 'package:nadif/screens/otp_screen.dart';
 import 'package:nadif/utils/utils.dart';
@@ -24,8 +25,15 @@ class AuthProvider extends ChangeNotifier {
 
   String get userId => _userId!;
 
+  String? _annonceId;
+
+  String get annonceId => _annonceId!;
+
   UserModal? _userModal;
   UserModal get userModal => _userModal!;
+
+  AnnonceModel? _annonceModel;
+  AnnonceModel get annonceModel => _annonceModel!;
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -119,26 +127,28 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void saveUserDataToFirebase(
-      {required BuildContext context,
-        required UserModal userModal,
-        required Function onSuccess,
-        required File profilePic}) async {
+  void saveUserDataToFirebase({
+    required BuildContext context,
+    required UserModal userModal,
+    required Function onSuccess,
+    required File profilePic,
+    required String userType, // added userType parameter
+  }) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       // uploading image to firebase storage
-      await storeFileToStorage("profilePick/$_userId", profilePic)
-          .then((value) {
+      await storeFileToStorage("profilePick/$_userId", profilePic).then((value) {
         userModal.profilePic = value;
         userModal.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
+        userModal.userId = _firebaseAuth.currentUser!.phoneNumber!;
       });
       _userModal = userModal;
 
-      // lahn yesra upload to database
+      // save user data to the correct collection based on userType parameter
       await _firebaseFirestore
-          .collection("fournisseur")
+          .collection(userType) // use userType parameter to specify collection name
           .doc(_userId)
           .set(userModal.toMap())
           .then((value) {
@@ -146,19 +156,37 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       });
-      await _firebaseFirestore
-          .collection("achteur")
-          .doc(_userId)
-          .set(userModal.toMap())
-          .then((value) {
-        onSuccess();
-        _isLoading = false;
-        notifyListeners();
+
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message.toString());
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void saveAnnonceDataToFirebase({
+    required BuildContext context,
+    required UserModal userModal,
+    required AnnonceModel annonceModel,
+    required Function onSuccess,
+    required File productPic,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      // uploading image to firebase storage
+      await storeFileToStorage("productPick/$_annonceId", productPic).then((value) {
+        annonceModel.productPic = value;
+        userModal.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
+        annonceModel.annonceId = _firebaseAuth.currentUser!.phoneNumber!;
       });
+      _annonceModel = annonceModel;
+
       await _firebaseFirestore
-          .collection("chauffeur")
-          .doc(_userId)
-          .set(userModal.toMap())
+          .collection('Annonce')
+          .doc(_annonceId)
+          .set(annonceModel.toMap1())
           .then((value) {
         onSuccess();
         _isLoading = false;
@@ -218,7 +246,7 @@ class AuthProvider extends ChangeNotifier {
           name: docChauffeur['name'],
           email: docChauffeur['email'],
           phoneNumber: docChauffeur['phoneNumber'],
-          permis: docChauffeur['Permis'],
+          permis: docChauffeur['permis'],
           userId: _firebaseAuth.currentUser!.uid,
           profilePic: docChauffeur['profilePic'],
         );
@@ -235,7 +263,11 @@ class AuthProvider extends ChangeNotifier {
   Future saveUserDataToSP () async{
     SharedPreferences s = await SharedPreferences.getInstance();
     await s.setString("user modal", jsonEncode(userModal.toMap()),);
+  }
 
+  Future saveAnnonceDataToSP () async{
+    SharedPreferences s = await SharedPreferences.getInstance();
+    await s.setString("annonce model", jsonEncode(userModal.toMap()),);
   }
 
   Future getDataFromSP () async {

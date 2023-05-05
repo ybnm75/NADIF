@@ -182,6 +182,7 @@ class _ChaffeurInformationsState extends State<ChaffeurInformations> {
           context: context,
           userModal: userModal,
           profilePic: image!,
+          userType: "chauffeur",
           onSuccess: () {
             ap.saveUserDataToSP().then(
                   (value) => ap.setSignIn().then(

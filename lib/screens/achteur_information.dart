@@ -174,6 +174,7 @@ class _AchteurInformationsState extends State<AchteurInformations> {
           context: context,
           userModal: userModal,
           profilePic: image!,
+          userType: "achteur",
           onSuccess: () {
             ap.saveUserDataToSP().then(
                   (value) => ap.setSignIn().then(
